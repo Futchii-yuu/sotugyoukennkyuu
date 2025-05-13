@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>入力フォーム</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .loginform{
+            display: flex;
+            justify-content: center;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ececec;
+            width: 300px;
+        }
+        #btn{
+            width: 100px;
+            height: 50px;
+        }
+        #btn input{
+            border: none;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="loginform">
+        <form action="home.html">
+            <input id="username" type="text"><br>
+            <input id="userid" type="text"><br>
+            <input id="password" type="text"><br>
+            <input id="btn" type="submit">
+        </form>
+    </div>
+
+    <script>
+        const username = document.getElementById('username');
+        const userid = document.getElementById('userid');
+        const password = document.getElementById('password');
+        const btn = document.getElementById('btn');
+        
+        btn.addEventListener('click', (event) => {
+            event.preventDefault(); // フォームのデフォルトの送信を防ぐ
+            // ここに処理を追加
+            console.log('ボタンがクリックされました');
+        });
+
+    </script>
+</body>
+</html>
