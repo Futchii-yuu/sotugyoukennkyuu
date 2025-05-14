@@ -124,7 +124,7 @@
         }
         if(/^[0-9_@]+$/.test(chars.value)){
           let errorMsg = document.createElement("div");
-          errorMsg.textContent = "※英字を含めてください。";
+          errorMsg.textContent = "※数字、@、_のみの入力は無効です。";
           errorMsg.classList.add("error");
           chars.after(errorMsg);
           isValid = false;
