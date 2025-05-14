@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サインアップ</title>
+    <style>
+        *{
+          margin: 0;
+          padding: 0;
+        }
+        
+        h1{
+          margin: 0.67em 0 0.67em 0;
+          position: fixed;
+          top: 0;
+          font-size: 4rem;
+          color: #fff;
+        }
+    
+        body {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          font-family: sans-serif;
+          background-color: #a7a4b5;
+          height: 100vh;
+        }
+        
+        .signup-box {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background: white;
+          margin-bottom: 60px;
+          padding-top: 30px;
+          border-radius: 10px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          width: 480px;
+        }
+    
+        h2 {
+          text-align: center;
+          margin-bottom: 5px;
+        }
+    
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 83.3%;
+        }
+        small{
+          align-self: flex-start;
+          color: #d21919;
+        }
+        input[type="text"],
+        input[type="password"] {
+          width: 100%;
+          padding: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+          margin-top: 15px;
+        }
+    
+        input[type="submit"] {
+          width: 100%;
+          padding: 10px;
+          /* background-color: #4CAF50; */
+          background-color: #63539e;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 25px;
+          margin-bottom: 30px;
+        }
+    
+        input[type="submit"]:hover {
+          /* background-color: #45a049; */
+          background-color: #8470c4;
+        }
+
+        .error{
+          color: red;
+          align-self: flex-start;
+          font-size: 0.92rem;
+        }
+      </style>
+</head>
+<body>
+    <div class="signup-box">
+      <h2>アカウントを作成</h2>
+      <form action="sign-up.php" method="POST">
+        <input id="username" type="text" name="username" placeholder="ユーザー名">
+        <input id="userid" type="text" name="userid" placeholder="ユーザーID">
+        <input id="password" type="password" name="password" placeholder="パスワード">
+        <input id="signupForm" type="submit" value="サインアップ">
+      </form>
+    </div>
+      
+    <script>
+      // 引数に、対象の文字・文字数の下限と上限を代入し、チェックする.
+      const check_charsLength = (chars, min, max, isValid) => {
+        const charsLen = chars.value.length;
+        if(charsLen < min || charsLen > max){
+          let errorMsg = document.createElement("div");
+          errorMsg.textContent = `※${min}字以上${max}字以内で入力してください。`;
+          errorMsg.classList.add("error");
+          chars.after(errorMsg);
+          return false;
+        }
+        return isValid;
+      }
+
+      const check_charsFormat = (chars) => {
+        if(/\s/.test(chars.value)){
+          console.log('空白だめー');
+          let errorMsg = document.createElement("div");
+          errorMsg.textContent = "※空白を含めずに入力してください。";
+          errorMsg.classList.add("error");
+          chars.after(errorMsg);
+        }
+        if(/^\d+$/.test(chars.value)){
+          console.log('数字のみはだめー');
+          let errorMsg = document.createElement("div");
+          errorMsg.textContent = "※英字または記号を含めてください。";
+          errorMsg.classList.add("error");
+          chars.after(errorMsg);
+        }
+        if(chars.value != '' && !/^[A-Za-z0-9_]+$/.test(chars.value) && chars.name === 'userid' || chars.name === 'password'){
+          console.log(chars.value);
+          console.log('半角英数とアンダースコア以外だめー');
+          let errorMsg = document.createElement("div");
+          errorMsg.textContent = "※使用できるのは半角英数字とアンダースコアのみです。";
+          errorMsg.classList.add("error");
+          chars.after(errorMsg);
+        }
+      }
+
+      const signupForm = document.getElementById('signupForm');
+      signupForm.addEventListener('click', (event) => {
+        let isValid = true;
+        const username = document.getElementById('username');
+        const userid = document.getElementById('userid');
+        const password = document.getElementById('password');
+        document.querySelectorAll(".error").forEach(el => el.remove());
+        isValid = check_charsLength(username, 1, 15, isValid);
+        isValid = check_charsLength(userid, 5, 15, isValid);
+        isValid = check_charsLength(password, 8, 15, isValid);
+        
+        check_charsFormat(username);
+        check_charsFormat(userid);
+        check_charsFormat(password);
+
+        if(!isValid){
+          event.preventDefault(); // フォームのデフォルトの送信を防ぐ.
+        }
+      });
+
+      
+
+    </script>
+</body>
+</html>
