@@ -109,34 +109,34 @@
           errorMsg.textContent = `※${min}字以上${max}字以内で入力してください。`;
           errorMsg.classList.add("error");
           chars.after(errorMsg);
-          return false;
+          isValid = false;
         }
         return isValid;
       }
 
-      const check_charsFormat = (chars) => {
+      const check_charsFormat = (chars, isValid) => {
         if(/\s/.test(chars.value)){
-          console.log('空白だめー');
           let errorMsg = document.createElement("div");
           errorMsg.textContent = "※空白を含めずに入力してください。";
           errorMsg.classList.add("error");
           chars.after(errorMsg);
+          isValid = false;
         }
-        if(/^\d+$/.test(chars.value)){
-          console.log('数字のみはだめー');
+        if(/^[0-9_@]+$/.test(chars.value)){
           let errorMsg = document.createElement("div");
-          errorMsg.textContent = "※英字または記号を含めてください。";
+          errorMsg.textContent = "※英字を含めてください。";
           errorMsg.classList.add("error");
           chars.after(errorMsg);
+          isValid = false;
         }
-        if(chars.value != '' && !/^[A-Za-z0-9_]+$/.test(chars.value) && chars.name === 'userid' || chars.name === 'password'){
-          console.log(chars.value);
-          console.log('半角英数とアンダースコア以外だめー');
+        if(chars.value != '' && !/^[A-Za-z0-9_@]+$/.test(chars.value) && chars.name != "username"){
           let errorMsg = document.createElement("div");
-          errorMsg.textContent = "※使用できるのは半角英数字とアンダースコアのみです。";
+          errorMsg.textContent = "※使用できるのは半角英数字、@、_のみです。";
           errorMsg.classList.add("error");
           chars.after(errorMsg);
+          isValid = false;
         }
+        return isValid;
       }
 
       const signupForm = document.getElementById('signupForm');
@@ -149,10 +149,9 @@
         isValid = check_charsLength(username, 1, 15, isValid);
         isValid = check_charsLength(userid, 5, 15, isValid);
         isValid = check_charsLength(password, 8, 15, isValid);
-        
-        check_charsFormat(username);
-        check_charsFormat(userid);
-        check_charsFormat(password);
+        isValid = check_charsFormat(username, isValid);
+        isValid = check_charsFormat(userid, isValid);
+        isValid = check_charsFormat(password, isValid);
 
         if(!isValid){
           event.preventDefault(); // フォームのデフォルトの送信を防ぐ.
