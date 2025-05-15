@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ChatRand</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    
+    h1{
+      margin: 0.67em 0 0.67em 0;
+      position: fixed;
+      top: 0;
+      font-size: 4rem;
+      color: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      align-items: center;
+      font-family: sans-serif;
+      background-color: #a7a4b5;
+      height: 100vh;
+    }
+    
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      margin-bottom: 60px;
+      padding-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 540px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 83.3%;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 10px;
+      /* background-color: #4CAF50; */
+      background-color: #63539e;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+      /* background-color: #45a049; */
+      background-color: #8470c4;
+    }
+    form a{
+      margin-top: 20px;
+      margin-bottom: 20px;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>ChatRand!</h1>
+<div class="login-box">
+  <h2>始める</h2>
+  <form action="login.php" method="POST">
+    <input type="text" name="username" placeholder="ユーザー名" required>
+    <input type="password" name="password" placeholder="パスワード" required>
+    <input type="submit" value="サインアップ">
+    <a href="signup.html">アカウントを作成</a>
+  </form>
+</div>
+
+</body>
+</html>
