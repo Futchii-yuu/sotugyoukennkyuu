@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobWars</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body{
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        #nameScreen{
+            position: fixed;
+            inset: 0;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 9999;
+            pointer-events: auto;
+        }
+        #nameScreen p{
+            font-size: 1.2rem;
+            margin: 0.8rem 0;
+            font-weight: bold;
+        }
+
+        .game_area {
+            background-color: #ececec;
+        }
+        .container{
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1.25% 3% 25% 8% 25% 12% 25%;
+            grid-template-rows: 8% 40% 10% 8% 34%;
+        }
+
+        /*プレイヤー情報表示*/
+        #playersInfo{
+            width: 100%;
+            height: 100%;
+            grid-column: -1 / -3;
+            grid-row: 1 / 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            /* background-color: #fff; */
+        }
+        .playersInfo{
+            background-color: rgb(208, 212, 224);
+            height: 14%;
+            border: 3px solid rgb(166,170,181);
+            border-radius: 100px 0 0 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .circle{
+            aspect-ratio: 1 / 1;
+            height: 50%;
+            /* background-color: rgb(166,170,181); */
+            border-radius: 50%;
+            margin-left: 1rem;
+        }
+        .playersName{
+            width: 9rem;
+            display: flex;
+            justify-content: center;
+        }
+        .playersStatus{
+            align-self: start;
+            width: 12rem;
+            font-size: 1.55rem;
+            display: flex;
+            justify-content: end;
+        }
+
+        /* 手札表示 */
+        #items_area{
+            width: 100%;
+            height: 100%;
+            /* background-color: rgb(208, 212, 224); */
+            grid-column: 2 / 7;
+            grid-row: -2;
+            display: grid;
+            grid-template-columns:11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1%;
+            grid-template-rows: 50% 50%;
+            overflow: hidden;
+        }
+        .items{
+            background-color: #fff;
+            width: 94%;
+            height: 90%;
+            display: grid;
+            grid-template-rows: 80% 20%;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .items .itemImg{
+            width: 100%;
+            height: 100%;
+        }
+        .items .items_char{
+            height: 100%;
+            font-size: 1rem;
+            grid-row: 2;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+        }
+
+        /* アイテムのピックアップ表示 */
+        #pickup_item{
+            width: 95%;
+            height: 95%;
+            grid-column: -2;
+            grid-row: -1 / -3;
+            background-color: #fff;
+            border: 6px solid rgb(208, 212, 224);
+            display: grid;
+            grid-template-columns: 50% 50%;
+            grid-template-rows: 17% 41% 42%;
+        }
+        #pickup_item .itemName{
+            grid-column: 1 / 3;
+            grid-row: 1;
+            /* font-size: 1.74rem; */
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+        }
+        #pickup_item .itemImg{
+            grid-column: 1;
+            grid-row: 2;
+            aspect-ratio: 1 / 1;
+            height: 92%;
+            margin-left: 11.3px;
+            margin-top: 4px;
+        }
+        #pickup_item .itemInfo{
+            grid-column: 2;
+            grid-row: 2;
+            font-size: 1.5rem;
+        }
+        #pickup_item .infoText{
+            grid-column: 1 / 3;
+            grid-row: 3;
+            font-size: 1.1rem;
+            display: flex;
+            margin: 0px 5px 5px 5px;
+        }
+
+        /*カレントプレイヤーの表示*/
+        #current_p{
+            grid-column: 3;
+            grid-row: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(208, 212, 224);
+            border: 2px solid rgb(166,170,181);
+            border-radius: 100px;
+            height: 2rem;
+            margin-top: 1rem;
+        }
+
+        /*ピックアイテムの表示*/
+        #pickItems, #pickItems_d{
+            grid-column: 3;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+        }
+        #pickItems{
+            z-index: 20;
+        }
+        #pickItems .c_container, #pickItems_d .c_container{
+            width: 100%;
+            height: 24%;
+            margin: 0.25rem 0 0.25rem -2px;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: 24% 52% 24%;
+            grid-template-rows: 40% 60%;
+            border: 3px solid rgb(166,170,181);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #pickItems .c_container .c_itemImg, #pickItems_d .c_container .c_itemImg{
+            grid-column: 1;
+            grid-row: 1 / 3;
+            aspect-ratio: 1 / 1;
+            height: 100%;
+        }
+        #pickItems .c_container .c_itemName, #pickItems_d .c_container .c_itemName{
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            font-weight: bold;
+            margin-left: 0.25rem;
+            /* font-size: 1rem; */
+        }
+        #pickItems .c_container .c_itemInfo, #pickItems_d .c_container .c_itemInfo{
+            grid-column: 3;
+            grid-row: 1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: start;
+            justify-content: end;
+            margin-right: 0.25rem;
+        }
+        #pickItems .c_container .c_infoText, #pickItems_d .c_container .c_infoText{
+            grid-column: 2 / fill;
+            grid-row: 2;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+
+        /* 攻撃対象 */
+        .target{
+            grid-column: 5;
+            grid-row: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(208, 212, 224);
+            border: 2px solid rgb(166,170,181);
+            border-radius: 100px;
+            height: 2rem;
+            margin: 1rem 0.5rem 0 -0.5rem;
+        }
+        #targetArrow{
+            grid-column: 4;
+            grid-row: 1;
+            display: flex;
+            align-items: end;
+        }
+        #targetArrow .targetArrow_r{
+            width: 72%;
+            height: 64%;
+            margin-left: 0.5rem;
+            margin-bottom: 0.14rem;
+        }
+        #targetArrow .targetArrow{
+            width: 72%;
+            height: 64%;
+            margin-left: 0.6rem;
+            transform: scale(-1, 1);
+            margin-bottom: 0.14rem;
+        }
+
+        /* 攻撃対象のピックアイテム */
+        #pickItems_t{
+            grid-column: 5;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            margin: 0 8px 0 -12px;
+            border-radius: 10px;
+        }
+        #pickItems_t .c_container{
+            width: 100%;
+            height: 24%;
+            margin: 0.25rem 0 0.25rem -2px;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: 24% 52% 24%;
+            grid-template-rows: 40% 60%;
+            border: 3px solid rgb(166,170,181);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #pickItems_t .c_container .c_itemImg{
+            grid-column: 1;
+            grid-row: 1 / 3;
+            aspect-ratio: 1 / 1;
+            height: 100%;
+        }
+        #pickItems_t .c_container .c_itemName{
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            font-weight: bold;
+            margin-left: 0.25rem;
+            font-size: 1rem;
+        }
+        #pickItems_t .c_container .c_itemInfo{
+            grid-column: 3;
+            grid-row: 1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: start;
+            justify-content: end;
+            margin-right: 0.25rem;
+        }
+        #pickItems_t .c_container .c_infoText{
+            grid-column: 2 / fill;
+            grid-row: 2;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+
+        /* ダメージ計算の表示 */
+        #Below_pickItems{
+            grid-column: 3;
+            grid-row: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            border: 4px solid rgb(166,170,181);
+            border-radius: 10px;
+            color: #f5f5f5;
+            background-color: rgb(166,170,181);
+            height: 52%;
+            width: 94%;
+            position: relative;
+            top: 11px;
+            left: 3px;
+        }
+        #Below_pickItems .showDamage{
+            background-color: #fff;
+        }
+
+        /* 防御計算の表示 */
+        #Below_pickItems_t{
+            grid-column: 5;
+            grid-row: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            border: 4px solid rgb(195, 58, 58);
+            border-radius: 10px;
+            color: #f5f5f5;
+            background-color: rgb(195, 58, 58);
+            height: 52%;
+            width: 94%;
+            position: relative;
+            top: 11px;
+            left: -3px;
+            opacity: 0;
+        }
+
+        /* でかい線 */
+        #line{
+            grid-row: 4;
+            grid-column: 1 / 6;
+            background-color: rgb(166,170,181);
+            height: 43%;
+            border-radius: 0 5px 5px 0;
+            position: relative;
+            top: 5px;
+            z-index: 100;
+        }
+
+        /* ショップ */
+        #shopBtnContainer{
+            width: 100%;
+            height: 100%;
+            grid-column: 6;
+            grid-row: 4;
+            display: flex;
+            justify-content: end;
+            z-index: 100;
+        }
+        #shopBtn{
+            width: 90%;
+            height: 80%;
+            color: #fff;
+            background-color: rgb(154, 115, 86);
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+        #shopBtn:hover{
+            background-color: rgb(173, 132, 100);
+        }
+        #shopBoxContainer{
+            width: 100%;
+            height: 100%;
+            grid-column: 1 / 7;
+            grid-row: -1 / -3;
+            z-index: 50;
+            display: none;
+            align-items: end;
+        }
+        #shopBox{
+            width: 100%;
+            height: 97%;
+            background-color: rgb(208, 212, 224);
+            display: flex;
+            justify-content: end;
+            align-items: end;
+        }
+        #shopItems_area{
+            width: 788.4px;
+            height: 224.4px;
+            display: grid;
+            grid-template-columns:11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1%;
+            grid-template-rows: 50% 50%;
+        }
+
+        #pickItems_shop{
+            grid-column: 5;
+            grid-row: 2;
+            display: none;
+            flex-direction: column;
+            margin: 0 8px 0 -12px;
+            border-radius: 10px;
+            z-index: 100;
+            /* background-color: red; */
+        }
+        #pickItems_shop .c_container{
+            width: 100%;
+            height: 24%;
+            margin: 0.25rem 0 0.25rem -2px;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: 24% 52% 24%;
+            grid-template-rows: 40% 60%;
+            border: 3px solid rgb(166,170,181);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #pickItems_shop .c_container .c_itemImg{
+            grid-column: 1;
+            grid-row: 1 / 3;
+            aspect-ratio: 1 / 1;
+            height: 100%;
+        }
+        #pickItems_shop .c_container .c_itemName{
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            font-weight: bold;
+            margin-left: 0.25rem;
+            /* font-size: 1rem; */
+        }
+        #pickItems_shop .c_container .c_itemInfo{
+            grid-column: 3;
+            grid-row: 1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: start;
+            justify-content: end;
+            margin-right: 0.25rem;
+        }
+        #pickItems_shop .c_container .c_infoText{
+            grid-column: 2 / fill;
+            grid-row: 2;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+
+        /* 売却 */
+        #sellBtnContainer{
+            grid-column: 6;
+            grid-row: 3;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+        }
+        #sellBtn{
+            width: 50%;
+            height: 63%;
+            background-color: rgb(166,170,181);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 3px;
+            font-size: 1.2rem;
+            position: relative;
+            top: 0.3rem;
+        }
+        #sellBtn:hover{
+            background-color: rgb(180, 184, 196);
+        }
+
+        #sellBox{
+            grid-column: 3;
+            grid-row: 2;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            border-radius: 10px;
+            z-index: 100;
+            display: none;
+        }
+        #sellBox .c_container{
+            width: 100%;
+            height: 24%;
+            margin: 0.25rem 0 0.25rem -2px;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: 24% 52% 24%;
+            grid-template-rows: 40% 60%;
+            border: 3px solid rgb(166,170,181);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        #sellBox .c_container .c_itemImg{
+            grid-column: 1;
+            grid-row: 1 / 3;
+            aspect-ratio: 1 / 1;
+            height: 100%;
+        }
+        #sellBox .c_container .c_itemName{
+            grid-column: 2;
+            grid-row: 1;
+            display: flex;
+            font-weight: bold;
+            margin-left: 0.25rem;
+            /* font-size: 1rem; */
+        }
+        #sellBox .c_container .c_itemInfo{
+            grid-column: 3;
+            grid-row: 1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: start;
+            justify-content: end;
+            margin-right: 0.25rem;
+        }
+        #sellBox .c_container .c_infoText{
+            grid-column: 2 / fill;
+            grid-row: 2;
+            font-size: 0.8rem;
+            margin-left: 0.25rem;
+        }
+        #chat{
+            border: solid 2px;
+            text-align: center;
+            width: 100px;
+            height: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #chatbox{
+            grid-column: 1/fill;
+            grid-row: 1/fill;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            opacity: 0.9;
+            background-color: #f5f5f5;
+            display: none;
+        }
+
+        #message{
+            width: 100%;
+            height: 588px;
+            overflow-y: scroll;
+            margin: auto;
+            font-size: 20px;
+            border-top: 2px solid black;
+            margin-bottom: -2px;
+        }
+
+        #chattitle{
+            text-align: center;
+        }
+
+        #textbox{
+            width: 87%;
+            height: 21px;
+            position: relative;
+            bottom: 3px;
+        }
+
+        #button{
+            width: 12%;
+            height: 25px;
+            padding: 0;
+            justify-self: end;
+            position: relative;
+            bottom: 3px;
+        }
+
+        #msg{
+            padding-bottom: 10px;
+            padding-left: 15px;
+        }
+
+        header{
+            display: flex;
+            justify-content: space-between;
+            padding-right: 5px;
+        }
+
+        #ruleBook{
+            overflow-y: scroll;
+            grid-column: 1/fill;
+            grid-row: 1/fill;
+            width: 100%;
+            height: 100%;
+            z-index: 800;
+            opacity: 0.95;
+            background-color: #f5f5f5;
+            display: none;
+        }
+        #ruleBook *{
+            margin-left: 0.5rem;
+        }
+        #ruleBook p{
+            display: inline;
+        }
+
+        /*ルールブック色*/
+        .red{
+            color: #d00;
+        }
+        .blue{
+            color: #06f;
+        }
+        .yellow{
+            color: #cc0;
+        }
+        .white{
+            color: #aaa478ff;
+        }
+        .purple{
+            color: #a21d97ff;
+        }
+
+        .ruleimg{
+            width: 500px;
+        }
+
+        #title{
+            font-size: 90px;
+            margin-top: 0.8rem;
+        }
+
+        #topmessage{
+            justify-self: start;
+            background-color: rgb(227, 236, 228);
+            width: 80%;
+            height: 80%;
+            border: solid 2px;
+            border-radius: 6px;
+            padding-left: 15px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="nameScreen" style="text-align: center; padding: 40px;">
+        <h1 id="title">JobWars</h1>
+        <input type="text" id="nameInput" maxlength="15" placeholder="名前を入力してください" style="font-size: 1.2em; padding: 5px;">
+        <button id="joinButton" style="margin-bottom: 1rem; font-size: 1.2em; padding: 5px 10px;">決定</button>
+        <p>「JobWars」は、2〜4人で遊べる職業バトルカードゲーム。</p>
+        <p>プレイヤーはそれぞれ異なる“職業”がランダムに選ばれ、<br>固有のカードや戦略を駆使して最後の勝者を目指す！</p>
+        <p>職業ごとに全く違う戦い方と個性があり、相性・読み合い・タイミングが勝負のカギ！</p>
+        <p>友達同士でワイワイ盛り上がる、戦略×職業バトルの新感覚ゲーム！</p>
+    </div>
+
+    <div id="waitingScreen" style="height: 100%; text-align: center; padding: 40px; font-size: 1.5em; display: none; flex-direction: column; justify-content: space-around;">
+        <p id="waitingMessage" style="font-weight: bold;"></p>
+        <div></div>
+    </div>
+
+    <div id="gameContainer" class="displey" style="display: none;">
+        <header>
+            <div id="thisPlayerName" style="margin-left: 0.8rem;"></div>
+            <div id="ruleBookBtn">ルールブック</div>
+        </header>
+        <div class="game_area">
+            <div class="container">
+                <div id="playersInfo"></div>
+                <div id="sellBtnContainer"><div id="sellBtn">売却</div></div>
+                <div id="sellBox"></div>
+
+                <div id="shopBtnContainer"><div id="shopBtn">雑貨屋</div></div>
+                <div id="shopBoxContainer"><div id="shopBox">
+                    <div id="shopItems_area"></div>
+                </div></div>
+                <div id="pickItems_shop"></div>
+                <div id="items_area"></div>
+                <div id="pickup_item"></div>
+                <div id="current_p"></div>
+                <div id="pickItems"></div>
+                <div id="pickItems_d"></div>
+                <div id="target"></div>
+                <div id="targetArrow"></div>
+                <div id="pickItems_t"></div>
+                <div id="Below_pickItems">補充</div>
+                <div id="Below_pickItems_t"></div>
+                <div id="line"></div>
+                <div id="chatbox">
+                    <h1 id="chattitle">チャット</h1>
+                    <ul id="message"></ul>
+                    <form name="form">
+                        <input type="text" name="text" id="textbox" maxlength="35"><button id="button" name="btn">送信</button>
+                    </form>
+                </div>
+                <div id="ruleBook">
+                    <h1>ルールブック</h1>
+                    <p>・自分以外のプレイヤーのHPを0にしたら勝ち。</p><br>
+                    <br>
+                    <h2>基礎</h2>
+                    <h3>①:（ふっちーの画面）</h3>
+                    <img src="img/start.jpg" alt="" class="ruleimg"><br>
+                    <p>・接続したプレイヤーの情報が枠内に表示される。</p><br>
+                    <br>
+                    <h3>②:</h3>
+                    <img src="img/start2.jpg" alt="" class="ruleimg"><br>
+                    <p>・上から順にターンが進み、ターンに該当するプレイヤーの名前が枠内に表示される。</p><br>
+                    <br>
+                    <h3>③:</h3>
+                    <img src="img/start3.jpg" alt="" class="ruleimg"><br>
+                    <p>・ゲーム開始時、ランダムで配布された９枚のカードが枠内に表示される。</p><br>
+                    <br>
+                    <h3>④:</h3>
+                    <img src="img/start4.png" alt="" class="ruleimg"><br>
+                    <p>・自分のターン時に手札からカードを選択（クリック）すると、枠内に表示される。</p><br>
+                    <br>
+                    <h3>⑤:</h3>
+                    <img src="img/start5.png" alt="" class="ruleimg"><br>
+                    <p>・カードを選択した後、プレイヤーをクリックするとターゲットを選択できる。</p><br>
+                    <br>
+                    <h3>⑥:</h3>
+                    <img src="img/start4.png" alt="" class="ruleimg"><br>
+                    <p>・枠内をクリックすると行動が確定する。</p><br>
+                    <br>
+                    <h3>⑦:（ぶちこの画面）</h3>
+                    <img src="img/start6.png" alt="" class="ruleimg"><br>
+                    <p>・ターンプレイヤーが行動を確定した後、枠内に表示されたターゲットプレイヤーは、手札から防御のためのカードを選択できる。</p><br>
+                    <br>
+                    <h3>⑧:</h3>
+                    <img src="img/start7.png" alt="" class="ruleimg"><br>
+                    <p>・カードを選択した後、枠内をクリックすると防御を確定する。</p><br>
+                    <p>・攻撃の数値から防御の数値を差し引いた値分、ターゲットプレイヤーのHPを減少させる。</p><br>
+                    <br>
+                    <h2>カード</h2>
+                    <p>・カードは大きく分けて、攻撃、防御、魔法、雑貨の4種類ある。</p><br>
+                    <h3>--- 攻撃 ---</h3>
+                    <p>・ターゲットプレイヤーを攻撃するのに使える。</p><br>
+                    <h3>--- 防御 ---</h3>
+                    <p>・自分がターゲットプレイヤー時に、攻撃を防御するのに使える。</p><br>
+                    <h3>--- 魔法 ---</h3>
+                    <p>・MPを消費して使える。カードによって効果が違う。</p><br>
+                    <h3>--- 雑貨 ---</h3>
+                    <p>・雑貨屋から購入することで入手できるアイテム。</p><br>
+                    <br>
+                    <h2>属性</h2>
+                    <p>・無属性の攻撃は、どの属性でも防御できる。</p><br>
+                    <p>・</p><p class="red">火属性</p><p>の攻撃は、</p><P class="blue">水属性</P><p>で防御できる。</p><br>
+                    <p>・</p><p class="blue">水属性</p><p>の攻撃は、</p><P class="red">火属性</P><p>で防御できる。</p><br>
+                    <p>・</p><p class="yellow">雷属性</p><p>の攻撃は、</p><P class="yellow">雷属性</P><p>で防御できる。</p><br>
+                    <p>・</p><p class="white">光属性</p><p>の攻撃は、</p><P class="purple">闇属性</P><p>で防御できる。</p><br>
+                    <p>・</p><p class="purple">闇属性</p><p>の攻撃は、</p><P class="white">光属性</P><p>で防御できる。</p><br>
+                    <br>
+                    <p>・異なる属性のカードを一緒に使うと無属性になる。</p><br>
+                    <p>・防御フェーズで伝説のカチコチ薬を使うと攻撃の属性を無視してカードを使用できる。</p><br>
+                    <br>
+                    <h2>職業</h2>
+                    <p>・ゲーム開始時に各プレイヤーにランダムで職業が割り振られる。</p><br>
+                    <p>・職業は全部で4種類あり、割り振られるステータスとカードが違う。</p><br>
+                    <h3 class="blue">--- 剣士 ---</h3>
+                    <p>・標準的なステータスをしている。</p><br>
+                    <h3 class="purple">--- 魔法使い ---</h3>
+                    <p>・HPが低く、MPが高い。魔法が得意。</p><br>
+                    <p>・魔法使いの攻撃魔法は、防御にも使用できる（相手の攻撃の威力を分散させる）。</p><br>
+                    <h3 class="red">--- 戦士 ---</h3>
+                    <p>・HPが高く、MPが低い。</p><br>
+                    <h3 class="yellow">--- 貴族 ---</h3>
+                    <p>・金と権力だけはある。魔法の才能が皆無。</p><br>
+                    <br>
+                    <h2>売却</h2>
+                    <p>・自分のターン時に売却ボタンを押すと手札が売却モードになる。</p><br>
+                    <p>・売却したいカードを1つ選択すると、そのカードが売却され、所持金が増える。</p><br>
+                    <p>・魔法は売却できない。</p><br>
+                    <br>
+                    <h2>雑貨屋</h2>
+                    <p>・雑貨屋ボタンを押すと雑貨屋が開く。</p><br>
+                    <p>・雑貨屋では所持金を使ってカードを購入できる。</p><br>
+                    <p>・自分のターン時に購入したいカードを選択すると、そのカードが手札に追加され、所持金が減る。</p><br>
+                    <br>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <div></div>
+            <div id="topmessage"></div>
+            <button id="chat">チャット</button>
+        </footer>
+        
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="ruleBook.js"></script>
+    <script src="definition.js"></script>
+
+    <script src="app.js"></script>
+    <script>
+        // 名前入力画面の決定ボタンで入力値を待機画面へ反映する
+        document.addEventListener('DOMContentLoaded', function(){
+            const nameInput = document.getElementById('nameInput');
+            const joinButton = document.getElementById('joinButton');
+            const thisPlayerName = document.getElementById('thisPlayerName');
+
+            joinButton.addEventListener('click', function(){
+                const name = nameInput.value.trim();
+                thisPlayerName.textContent = name;
+            });
+        });
+    </script>
+</body>
+</html>

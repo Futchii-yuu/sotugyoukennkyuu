@@ -1,0 +1,17 @@
+{
+  "name": "catsfield_gamesys",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "serve": "^14.2.5",
+    "socket.io": "^4.8.1"
+  }
+}
